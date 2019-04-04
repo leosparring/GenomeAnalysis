@@ -1,0 +1,236 @@
+canu/1.7 has the useGrid option default set to useGrid=false. This can be
+overriden by another configuration file or a command-line option. 
+-- Canu 1.7
+--
+-- CITATIONS
+--
+-- Koren S, Walenz BP, Berlin K, Miller JR, Phillippy AM.
+-- Canu: scalable and accurate long-read assembly via adaptive k-mer weighting and repeat separation.
+-- Genome Res. 2017 May;27(5):722-736.
+-- http://doi.org/10.1101/gr.215087.116
+-- 
+-- Read and contig alignments during correction, consensus and GFA building use:
+--   Šošic M, Šikic M.
+--   Edlib: a C/C ++ library for fast, exact sequence alignment using edit distance.
+--   Bioinformatics. 2017 May 1;33(9):1394-1395.
+--   http://doi.org/10.1093/bioinformatics/btw753
+-- 
+-- Overlaps are generated using:
+--   Berlin K, et al.
+--   Assembling large genomes with single-molecule sequencing and locality-sensitive hashing.
+--   Nat Biotechnol. 2015 Jun;33(6):623-30.
+--   http://doi.org/10.1038/nbt.3238
+-- 
+--   Myers EW, et al.
+--   A Whole-Genome Assembly of Drosophila.
+--   Science. 2000 Mar 24;287(5461):2196-204.
+--   http://doi.org/10.1126/science.287.5461.2196
+-- 
+--   Li H.
+--   Minimap and miniasm: fast mapping and de novo assembly for noisy long sequences.
+--   Bioinformatics. 2016 Jul 15;32(14):2103-10.
+--   http://doi.org/10.1093/bioinformatics/btw152
+-- 
+-- Corrected read consensus sequences are generated using an algorithm derived from FALCON-sense:
+--   Chin CS, et al.
+--   Phased diploid genome assembly with single-molecule real-time sequencing.
+--   Nat Methods. 2016 Dec;13(12):1050-1054.
+--   http://doi.org/10.1038/nmeth.4035
+-- 
+-- Contig consensus sequences are generated using an algorithm derived from pbdagcon:
+--   Chin CS, et al.
+--   Nonhybrid, finished microbial genome assemblies from long-read SMRT sequencing data.
+--   Nat Methods. 2013 Jun;10(6):563-9
+--   http://doi.org/10.1038/nmeth.2474
+-- 
+-- CONFIGURE CANU
+--
+-- Detected Java(TM) Runtime Environment '1.8.0_151' (from '/sw/comp/java/x86_64/sun_jdk1.8.0_151/bin/java').
+-- Detected gnuplot version '4.6 patchlevel 2' (from 'gnuplot') and image format 'png'.
+-- Detected 20 CPUs and 125 gigabytes of memory.
+-- Detected Slurm with 'sinfo' binary in /usr/bin/sinfo.
+-- Grid engine disabled per useGrid=false option.
+--
+--                            (tag)Concurrency
+--                     (tag)Threads          |
+--            (tag)Memory         |          |
+--        (tag)         |         |          |     total usage     algorithm
+--        -------  ------  --------   --------  -----------------  -----------------------------
+-- Local: meryl      8 GB    4 CPUs x   1 job      8 GB    4 CPUs  (k-mer counting)
+-- Local: cormhap    6 GB   10 CPUs x   2 jobs    12 GB   20 CPUs  (overlap detection with mhap)
+-- Local: obtovl     4 GB    5 CPUs x   4 jobs    16 GB   20 CPUs  (overlap detection)
+-- Local: utgovl     4 GB    5 CPUs x   4 jobs    16 GB   20 CPUs  (overlap detection)
+-- Local: ovb        4 GB    1 CPU  x  20 jobs    80 GB   20 CPUs  (overlap store bucketizer)
+-- Local: ovs        8 GB    1 CPU  x  15 jobs   120 GB   15 CPUs  (overlap store sorting)
+-- Local: red        4 GB    4 CPUs x   5 jobs    20 GB   20 CPUs  (read error detection)
+-- Local: oea        4 GB    1 CPU  x  20 jobs    80 GB   20 CPUs  (overlap error adjustment)
+-- Local: bat       16 GB    4 CPUs x   1 job     16 GB    4 CPUs  (contig construction)
+-- Local: gfa        8 GB    4 CPUs x   1 job      8 GB    4 CPUs  (GFA alignment and processing)
+--
+-- Found PacBio uncorrected reads in the input files.
+--
+-- Generating assembly '190404_pacbio_assembly' in '/domus/h1/lesp0343/GenomeAnalysis/genome_analysis/analyses/02_genome_assembly/190404_genome_assembly_pacbio'
+--
+-- Parameters:
+--
+--  genomeSize        3100000
+--
+--  Overlap Generation Limits:
+--    corOvlErrorRate 0.2400 ( 24.00%)
+--    obtOvlErrorRate 0.0450 (  4.50%)
+--    utgOvlErrorRate 0.0450 (  4.50%)
+--
+--  Overlap Processing Limits:
+--    corErrorRate    0.3000 ( 30.00%)
+--    obtErrorRate    0.0450 (  4.50%)
+--    utgErrorRate    0.0450 (  4.50%)
+--    cnsErrorRate    0.0750 (  7.50%)
+--
+--
+-- BEGIN CORRECTION
+--
+----------------------------------------
+-- Starting command on Thu Apr  4 14:47:15 2019 with 12311.236 GB free disk space
+
+    cd .
+    /sw/bioinfo/canu/1.7/rackham/Linux-amd64/bin/gatekeeperCreate \
+      -minlength 1000 \
+      -o ./190404_pacbio_assembly.gkpStore.BUILDING \
+      ./190404_pacbio_assembly.gkpStore.gkp \
+    > ./190404_pacbio_assembly.gkpStore.BUILDING.err 2>&1
+
+-- Finished on Thu Apr  4 14:47:33 2019 (18 seconds) with 12311.082 GB free disk space
+----------------------------------------
+--
+-- In gatekeeper store './190404_pacbio_assembly.gkpStore':
+--   Found 100836 reads.
+--   Found 533813323 bases (172.19 times coverage).
+--
+--   Read length histogram (one '*' equals 218.94 reads):
+--        0    999      0 
+--     1000   1999  15326 **********************************************************************
+--     2000   2999  14190 ****************************************************************
+--     3000   3999  12962 ***********************************************************
+--     4000   4999  11680 *****************************************************
+--     5000   5999   9853 *********************************************
+--     6000   6999   9594 *******************************************
+--     7000   7999   7862 ***********************************
+--     8000   8999   5882 **************************
+--     9000   9999   4244 *******************
+--    10000  10999   3011 *************
+--    11000  11999   2108 *********
+--    12000  12999   1494 ******
+--    13000  13999   1049 ****
+--    14000  14999    750 ***
+--    15000  15999    458 **
+--    16000  16999    221 *
+--    17000  17999     95 
+--    18000  18999     36 
+--    19000  19999     14 
+--    20000  20999      5 
+--    21000  21999      1 
+--    22000  22999      0 
+--    23000  23999      1 
+--
+-- Running jobs.  First attempt out of 2.
+----------------------------------------
+-- Starting 'meryl' concurrent execution on Thu Apr  4 14:47:34 2019 with 12311.086 GB free disk space (1 processes; 1 concurrently)
+
+    cd correction/0-mercounts
+    ./meryl.sh 1 > ./meryl.000001.out 2>&1
+
+-- Finished on Thu Apr  4 14:50:19 2019 (165 seconds) with 12307.344 GB free disk space
+----------------------------------------
+-- Meryl finished successfully.
+--
+--  16-mers                                                                                           Fraction
+--    Occurrences   NumMers                                                                         Unique Total
+--       1-     1 248140472 *******************************************************************--> 0.7694 0.4662
+--       2-     2  44779897 ********************************************************************** 0.9083 0.6344
+--       3-     4  19325203 ******************************                                         0.9503 0.7108
+--       5-     7   5544988 ********                                                               0.9773 0.7816
+--       8-    11   1661602 **                                                                     0.9874 0.8227
+--      12-    16    797661 *                                                                      0.9912 0.8461
+--      17-    22    639664                                                                        0.9934 0.8659
+--      23-    29    610128                                                                        0.9953 0.8895
+--      30-    37    500796                                                                        0.9971 0.9193
+--      38-    46    290171                                                                        0.9986 0.9495
+--      47-    56    114194                                                                        0.9994 0.9704
+--      57-    67     38942                                                                        0.9997 0.9803
+--      68-    79     17297                                                                        0.9998 0.9844
+--      80-    92     10152                                                                        0.9999 0.9867
+--      93-   106      5694                                                                        0.9999 0.9882
+--     107-   121      3277                                                                        0.9999 0.9892
+--     122-   137      2282                                                                        0.9999 0.9899
+--     138-   154      2110                                                                        0.9999 0.9905
+--     155-   172      1968                                                                        1.0000 0.9910
+--     173-   191      1537                                                                        1.0000 0.9916
+--     192-   211      1495                                                                        1.0000 0.9922
+--     212-   232      1734                                                                        1.0000 0.9927
+--     233-   254      1799                                                                        1.0000 0.9935
+--     255-   277      1614                                                                        1.0000 0.9943
+--     278-   301      1151                                                                        1.0000 0.9951
+--     302-   326       742                                                                        1.0000 0.9957
+--     327-   352       516                                                                        1.0000 0.9961
+--     353-   379       499                                                                        1.0000 0.9965
+--     380-   407       471                                                                        1.0000 0.9968
+--     408-   436       404                                                                        1.0000 0.9972
+--     437-   466       266                                                                        1.0000 0.9975
+--     467-   497       222                                                                        1.0000 0.9977
+--     498-   529       141                                                                        1.0000 0.9979
+--     530-   562        86                                                                        1.0000 0.9980
+--     563-   596        47                                                                        1.0000 0.9981
+--     597-   631        47                                                                        1.0000 0.9982
+--     632-   667        27                                                                        1.0000 0.9982
+--     668-   704        24                                                                        1.0000 0.9982
+--     705-   742        29                                                                        1.0000 0.9983
+--     743-   781        26                                                                        1.0000 0.9983
+--     782-   821        27                                                                        1.0000 0.9984
+--
+--      254337 (max occurrences)
+--   284160311 (total mers, non-unique)
+--    74359185 (distinct mers, non-unique)
+--   248140472 (unique mers)
+-- For mhap overlapping, set repeat k-mer threshold to 5323.
+--
+-- Found 532300783 16-mers; 322499657 distinct and 248140472 unique.  Largest count 254337.
+--
+-- OVERLAPPER (mhap) (correction)
+--
+-- Set corMhapSensitivity=low based on read coverage of 172.
+--
+-- PARAMETERS: hashes=256, minMatches=3, threshold=0.8
+--
+-- Given 6 GB, can fit 18000 reads per block.
+-- For 7 blocks, set stride to 2 blocks.
+-- Logging partitioning to 'correction/1-overlapper/partitioning.log'.
+-- Configured 6 mhap precompute jobs.
+-- Configured 10 mhap overlap jobs.
+--
+-- Running jobs.  First attempt out of 2.
+----------------------------------------
+-- Starting 'cormhap' concurrent execution on Thu Apr  4 14:50:31 2019 with 12307.247 GB free disk space (6 processes; 2 concurrently)
+
+    cd correction/1-overlapper
+    ./precompute.sh 1 > ./precompute.000001.out 2>&1
+    ./precompute.sh 2 > ./precompute.000002.out 2>&1
+    ./precompute.sh 3 > ./precompute.000003.out 2>&1
+    ./precompute.sh 4 > ./precompute.000004.out 2>&1
+    ./precompute.sh 5 > ./precompute.000005.out 2>&1
+    ./precompute.sh 6 > ./precompute.000006.out 2>&1
+
+-- Finished on Thu Apr  4 15:51:03 2019 (3632 seconds) with 12273.97 GB free disk space
+----------------------------------------
+--
+-- Mhap precompute jobs failed, retry.
+--   job correction/1-overlapper/blocks/000001.dat FAILED.
+--   job correction/1-overlapper/blocks/000002.dat FAILED.
+--
+--
+-- Running jobs.  Second attempt out of 2.
+----------------------------------------
+-- Starting 'cormhap' concurrent execution on Thu Apr  4 15:51:03 2019 with 12273.97 GB free disk space (2 processes; 2 concurrently)
+
+    cd correction/1-overlapper
+    ./precompute.sh 1 > ./precompute.000001.out 2>&1
+    ./precompute.sh 2 > ./precompute.000002.out 2>&1
