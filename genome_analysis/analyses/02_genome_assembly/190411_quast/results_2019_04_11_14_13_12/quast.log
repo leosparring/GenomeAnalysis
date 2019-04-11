@@ -1,0 +1,61 @@
+/sw/bioinfo/quast/4.5.4/rackham/bin/quast.py /home/lesp0343/GenomeAnalysis/genome_analysis/analyses/02_genome_assembly/190405_genome_correction_illumina/190405_pilon_illumina_to_pacbio.fasta
+
+Version: 4.5.4
+
+System information:
+  OS: Linux-3.10.0-957.10.1.el7.x86_64-x86_64-with-centos-7.6.1810-Core (linux_64)
+  Python version: 2.7.6
+  CPUs number: 20
+
+Started: 2019-04-11 14:13:12
+
+Logging to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/quast.log
+NOTICE: Maximum number of threads is set to 5 (use --threads option to set it manually)
+
+CWD: /domus/h1/lesp0343
+Main parameters: 
+  Threads: 5, minimum contig length: 500, ambiguity: one, threshold for extensive misassembly size: 1000
+
+Contigs:
+  Pre-processing...
+  /home/lesp0343/GenomeAnalysis/genome_analysis/analyses/02_genome_assembly/190405_genome_correction_illumina/190405_pilon_illumina_to_pacbio.fasta ==> 190405_pilon_illumina_to_pacbio
+
+2019-04-11 14:13:19
+Running Basic statistics processor...
+  Contig files: 
+    190405_pilon_illumina_to_pacbio
+  Calculating N50 and L50...
+    190405_pilon_illumina_to_pacbio, N50 = 2773702, L50 = 1, Total length = 3136314, GC % = 37.79, # N's per 100 kbp =  0.00
+  Drawing Nx plot...
+    saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/basic_stats/Nx_plot.pdf
+  Drawing cumulative plot...
+    saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/basic_stats/cumulative_plot.pdf
+  Drawing GC content plot...
+    saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/basic_stats/GC_content_plot.pdf
+  Drawing 190405_pilon_illumina_to_pacbio GC content plot...
+    saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/basic_stats/190405_pilon_illumina_to_pacbio_GC_content_plot.pdf
+Done.
+
+NOTICE: Genes are not predicted by default. Use --gene-finding option to enable it.
+
+2019-04-11 14:13:21
+Creating large visual summaries...
+This may take a while: press Ctrl-C to skip this step..
+  1 of 2: Creating Icarus viewers...
+  2 of 2: Creating PDF with all tables and plots...
+Done
+
+2019-04-11 14:13:22
+RESULTS:
+  Text versions of total report are saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/report.txt, report.tsv, and report.tex
+  Text versions of transposed total report are saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/transposed_report.txt, transposed_report.tsv, and transposed_report.tex
+  HTML version (interactive tables and plots) saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/report.html
+  PDF version (tables and plots) is saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/report.pdf
+  Icarus (contig browser) is saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/icarus.html
+  Log saved to /domus/h1/lesp0343/quast_results/results_2019_04_11_14_13_12/quast.log
+
+Finished: 2019-04-11 14:13:22
+Elapsed time: 0:00:10.166904
+NOTICEs: 2; WARNINGs: 0; non-fatal ERRORs: 0
+
+Thank you for using QUAST!
