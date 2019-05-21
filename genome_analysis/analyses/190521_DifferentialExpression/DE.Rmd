@@ -1,0 +1,38 @@
+---
+title: "Untitled"
+author: "Leonard Sparring"
+date: "5/21/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(DESeq2)
+```
+
+## R Markdown
+
+```{r, include=FALSE}
+
+condition <- c('BH','BH','Serum','Serum','Serum','BH')
+
+sampleFiles <- grep("csv",list.files("/home/leo/Documents/GenomeAnalysis/GenomeAnalysis/genome_analysis/analyses/190516_htseq_count_data/"),value=TRUE)
+
+library("DESeq2")
+ddsHTSeq <- DESeqDataSetFromHTSeqCount(sampleTable = sampleTable,
+                                       directory = "/home/leo/Documents/GenomeAnalysis/GenomeAnalysis/genome_analysis/analyses/190516_htseq_count_data",
+                                       design= ~ condition)
+ddsHTSeq
+
+```
+
+```{r, include=TRUE}
+head(BH.1)
+
+
+```
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
