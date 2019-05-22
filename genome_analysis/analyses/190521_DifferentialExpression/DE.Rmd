@@ -14,11 +14,11 @@ library(DESeq2)
 
 ```{r, include=TRUE}
 
-sampleCondition <- c('BH','BH','Serum','Serum','Serum','BH')
+sampleCondition <- c('BH','BH','BH','Serum','Serum','Serum')
 
 sampleFiles <- grep("csv",list.files("/home/leo/Documents/GenomeAnalysis/GenomeAnalysis/genome_analysis/analyses/190516_htseq_count_data/"),value=TRUE)
 
-sampleTable <- data.frame(sampleName = sampleFiles,
+sampleTable <- data.frame(sampleName = c('BH_1','BH_2','BH_3','Serum_1','Serum_2','Serum_3'),
                           fileName = sampleFiles,
                           condition = sampleCondition)
 
@@ -26,14 +26,22 @@ ddsHTSeq <- DESeqDataSetFromHTSeqCount(sampleTable = sampleTable,
                                        directory = "/home/leo/Documents/GenomeAnalysis/GenomeAnalysis/genome_analysis/analyses/190516_htseq_count_data",
                                        design= ~ condition)
 ddsHTSeq
-nrow(ddsHTSeq)
+
 ```
 
 ```{r, include=TRUE}
+# Filtering out the hypothetical proteins
+mykeep <- !grepl("KAEIAEFF*", rownames(counts(ddsHTSeq)))
+names(mykeep) <- rownames(counts(ddsHTSeq))
+nrow(ddsHTSeq)
+ddsHTSeq <- ddsHTSeq[mykeep,]
+nrow(ddsHTSeq)
+counts(ddsHTSeq)
+
 #Pre-filtering
 keep <- rowSums(counts(ddsHTSeq)) >= 10
 ddsHTSeq <- ddsHTSeq[keep,]
-
+counts(ddsHTSeq)
 nrow(ddsHTSeq)
 
 
@@ -47,7 +55,32 @@ res <- results(ddsHTSeq)
 res
 ```
 
-#
+```{r, include=TRUE}
+# Ordered p-values
+
+resOrdered <- res[order(res$pvalue),]
+
+summary(res)
+
+sum(res$padj < 0.1, na.rm=TRUE) # Way too many?
+
+
+
+
+```
+
+```{r, include=TRUE}
+
+# Exporting most significant genes to csv
+
+resSig <- subset(resOrdered, padj < 0.01)
+resSig
+
+write.csv(as.data.frame(resOrdered), 
+          file="condition_Serum_vs_BH_pval0point01.csv")
+
+```
+
 
 ```{r, include=TRUE}
 # Log fold change shrinkage for visualization and ranking
@@ -71,6 +104,7 @@ plotMA(resLFC, ylim=c(-2,2))
 # Heatmap
 
 ntd <- normTransform(ddsHTSeq)
+print(ntd)
 
 library("pheatmap")
 select <- order(rowMeans(counts(ddsHTSeq,normalized=TRUE)),
