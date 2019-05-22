@@ -10,29 +10,74 @@ knitr::opts_chunk$set(echo = TRUE)
 library(DESeq2)
 ```
 
-## R Markdown
 
-```{r, include=FALSE}
 
-condition <- c('BH','BH','Serum','Serum','Serum','BH')
+```{r, include=TRUE}
+
+sampleCondition <- c('BH','BH','Serum','Serum','Serum','BH')
 
 sampleFiles <- grep("csv",list.files("/home/leo/Documents/GenomeAnalysis/GenomeAnalysis/genome_analysis/analyses/190516_htseq_count_data/"),value=TRUE)
 
-library("DESeq2")
+sampleTable <- data.frame(sampleName = sampleFiles,
+                          fileName = sampleFiles,
+                          condition = sampleCondition)
+
 ddsHTSeq <- DESeqDataSetFromHTSeqCount(sampleTable = sampleTable,
                                        directory = "/home/leo/Documents/GenomeAnalysis/GenomeAnalysis/genome_analysis/analyses/190516_htseq_count_data",
                                        design= ~ condition)
 ddsHTSeq
+nrow(ddsHTSeq)
+```
+
+```{r, include=TRUE}
+#Pre-filtering
+keep <- rowSums(counts(ddsHTSeq)) >= 10
+ddsHTSeq <- ddsHTSeq[keep,]
+
+nrow(ddsHTSeq)
+
+
+```
+```{r, include=TRUE}
+
+# Differential expression analysis
+
+ddsHTSeq <- DESeq(ddsHTSeq)
+res <- results(ddsHTSeq)
+res
+```
+
+#
+
+```{r, include=TRUE}
+# Log fold change shrinkage for visualization and ranking
+
+resultsNames(ddsHTSeq)
+
+resLFC <- lfcShrink(ddsHTSeq, coef="condition_Serum_vs_BH", type="apeglm")
+resLFC
 
 ```
 
 ```{r, include=TRUE}
-head(BH.1)
 
+# Plot of shrunken log2 fold changes
+plotMA(resLFC, ylim=c(-2,2))
 
 ```
 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r, include=TRUE}
+# Heatmap
+
+ntd <- normTransform(ddsHTSeq)
+
+library("pheatmap")
+select <- order(rowMeans(counts(ddsHTSeq,normalized=TRUE)),
+                decreasing=TRUE)[1:20]
+df <- as.data.frame(colData(ddsHTSeq)[,c("condition","sizeFactor")])
+pheatmap(assay(ntd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+         cluster_cols=FALSE, annotation_col=df)
 ```
+
+
