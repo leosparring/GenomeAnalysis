@@ -1,8 +1,10 @@
 ---
-title: "Untitled"
+title: "Differential Expression Analysis"
 author: "Leonard Sparring"
 date: "5/21/2019"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -56,9 +58,9 @@ res
 ```
 
 ```{r, include=TRUE}
-# Ordered p-values
+# Ordered genes by log2foldchanges
 
-resOrdered <- res[order(res$pvalue),]
+resOrdered <- res[order(res$log2FoldChange),]
 
 summary(res)
 
@@ -77,7 +79,7 @@ resSig <- subset(resOrdered, padj < 0.01)
 resSig
 
 write.csv(as.data.frame(resOrdered), 
-          file="condition_Serum_vs_BH_pval0point01.csv")
+          file="condition_Serum_vs_BH.csv")
 
 ```
 
@@ -99,19 +101,28 @@ plotMA(resLFC, ylim=c(-2,2))
 
 ```
 
+# Heatmap of differentially expressed genes. normalized counts ordered by most differentially log fold changes
 
 ```{r, include=TRUE}
-# Heatmap
-
-ntd <- normTransform(ddsHTSeq)
-print(ntd)
 
 library("pheatmap")
+
+ntd <- normTransform(ddsHTSeq)
+
 select <- order(rowMeans(counts(ddsHTSeq,normalized=TRUE)),
-                decreasing=TRUE)[1:20]
+                decreasing=TRUE)
+
+#as.matrix(resOrdered) # ordered by log2FoldChanges
+
+rowMeansCounts <- assay(ntd)[select,]
+topVarGenes <- subset(rowMeansCounts, rownames(rowMeansCounts) %in% row.names(resOrdered)[1:20])
+
+
 df <- as.data.frame(colData(ddsHTSeq)[,c("condition","sizeFactor")])
-pheatmap(assay(ntd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+pheatmap(topVarGenes, cluster_rows=FALSE, show_rownames=TRUE,
          cluster_cols=FALSE, annotation_col=df)
+
 ```
 
+# Heatmap of the sample-to-sample distances
 
