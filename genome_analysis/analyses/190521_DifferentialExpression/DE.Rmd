@@ -33,12 +33,12 @@ ddsHTSeq
 
 ```{r, include=TRUE}
 # Filtering out the hypothetical proteins
-mykeep <- !grepl("KAEIAEFF*", rownames(counts(ddsHTSeq)))
-names(mykeep) <- rownames(counts(ddsHTSeq))
-nrow(ddsHTSeq)
-ddsHTSeq <- ddsHTSeq[mykeep,]
-nrow(ddsHTSeq)
-counts(ddsHTSeq)
+#mykeep <- !grepl("KAEIAEFF*", rownames(counts(ddsHTSeq)))
+#names(mykeep) <- rownames(counts(ddsHTSeq))
+#nrow(ddsHTSeq)
+#ddsHTSeq <- ddsHTSeq[mykeep,]
+#nrow(ddsHTSeq)
+#counts(ddsHTSeq)
 
 #Pre-filtering
 keep <- rowSums(counts(ddsHTSeq)) >= 10
@@ -63,6 +63,9 @@ res
 resOrdered <- res[order(res$log2FoldChange),]
 
 summary(res)
+res05 <- results(ddsHTSeq, alpha=0.05)
+summary(res05)
+
 
 sum(res$padj < 0.1, na.rm=TRUE) # Way too many?
 
@@ -78,8 +81,10 @@ sum(res$padj < 0.1, na.rm=TRUE) # Way too many?
 resSig <- subset(resOrdered, padj < 0.01)
 resSig
 
-write.csv(as.data.frame(resOrdered), 
+write.csv(as.data.frame(resSig), 
           file="condition_Serum_vs_BH.csv")
+
+write.csv(as.data.frame(resSig[ order( -resSig$log2FoldChange, -resSig$baseMean ),]), file="UpRegulated.csv")
 
 ```
 
@@ -101,7 +106,7 @@ plotMA(resLFC, ylim=c(-2,2))
 
 ```
 
-# Heatmap of differentially expressed genes. normalized counts ordered by most differentially log fold changes
+# Heatmap of downregulated differentially expressed genes. normalized counts ordered by most differentially log fold changes
 
 ```{r, include=TRUE}
 
@@ -111,8 +116,6 @@ ntd <- normTransform(ddsHTSeq)
 
 select <- order(rowMeans(counts(ddsHTSeq,normalized=TRUE)),
                 decreasing=TRUE)
-
-#as.matrix(resOrdered) # ordered by log2FoldChanges
 
 rowMeansCounts <- assay(ntd)[select,]
 topVarGenes <- subset(rowMeansCounts, rownames(rowMeansCounts) %in% row.names(resOrdered)[1:20])
@@ -124,5 +127,52 @@ pheatmap(topVarGenes, cluster_rows=FALSE, show_rownames=TRUE,
 
 ```
 
-# Heatmap of the sample-to-sample distances
+# DE of upregulated genes
+
+```{r, include=TRUE}
+
+
+select <- order(rowMeans(counts(ddsHTSeq,normalized=TRUE)),
+                decreasing=TRUE)
+
+resNegOrdered <- res[order(-res$log2FoldChange),]
+
+rowMeansCounts <- assay(ntd)[select,]
+topVarNegGenes <- subset(rowMeansCounts, rownames(rowMeansCounts) %in% row.names(resNegOrdered)[1:20])
+
+
+df2 <- as.data.frame(colData(ddsHTSeq)[,c("condition","sizeFactor")])
+pheatmap(topVarNegGenes, cluster_rows=FALSE, show_rownames=TRUE,
+         cluster_cols=FALSE, annotation_col=df2)
+
+
+
+
+
+```
+
+
+# Ordered by p-value
+
+```{r, include=TRUE}
+
+
+select <- order(rowMeans(counts(ddsHTSeq,normalized=TRUE)),
+                decreasing=TRUE)
+
+resPvalOrdered <- res[order(res$pvalue),]
+
+rowMeansCounts <- assay(ntd)[select,]
+topVarPvalGenes <- subset(rowMeansCounts, rownames(rowMeansCounts) %in% row.names(resPvalOrdered)[1:20])
+
+
+df3 <- as.data.frame(colData(ddsHTSeq)[,c("condition","sizeFactor")])
+pheatmap(topVarPvalGenes, cluster_rows=FALSE, show_rownames=TRUE,
+         cluster_cols=FALSE, annotation_col=df3)
+
+
+
+
+```
+
 
