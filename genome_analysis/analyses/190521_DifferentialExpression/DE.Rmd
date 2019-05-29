@@ -5,6 +5,7 @@ date: "5/21/2019"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -33,17 +34,17 @@ ddsHTSeq
 
 ```{r, include=TRUE}
 # Filtering out the hypothetical proteins
-#mykeep <- !grepl("KAEIAEFF*", rownames(counts(ddsHTSeq)))
-#names(mykeep) <- rownames(counts(ddsHTSeq))
-#nrow(ddsHTSeq)
-#ddsHTSeq <- ddsHTSeq[mykeep,]
-#nrow(ddsHTSeq)
+mykeep <- !grepl("KAEIAEFF*", rownames(counts(ddsHTSeq)))
+names(mykeep) <- rownames(counts(ddsHTSeq))
+nrow(ddsHTSeq)
+ddsHTSeq <- ddsHTSeq[mykeep,]
+nrow(ddsHTSeq)
 #counts(ddsHTSeq)
 
 #Pre-filtering
 keep <- rowSums(counts(ddsHTSeq)) >= 10
 ddsHTSeq <- ddsHTSeq[keep,]
-counts(ddsHTSeq)
+#counts(ddsHTSeq)
 nrow(ddsHTSeq)
 
 
